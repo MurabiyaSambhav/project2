@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head id="navbar">
+  <meta charset="UTF-8">
+  <title>My Articles</title>
+  <link rel="stylesheet" href="{% static 'css/article.css' %}">
+</head>
+<body>
+
+<!-- Navbar -->
+<div id="navbar" style="display: flex; justify-content: space-between; align-items: center;">
+  {% if is_logged_in %}
+    <div>
+      <a href="{% url 'add_article' %}" class="button ajax-page">Add Article</a>
+      <a 
+        href="{% url 'draft_article' %}" 
+        id="draftsLink"
+        class="button ajax-page" 
+        data-has-drafts="{{ has_drafts|yesno:'true,false' }}"> My Drafts </a>
+      <a href="{% url 'logout' %}" class="button">Logout</a>
+    </div>
+    <div><strong>Welcome, {{ user_name }}!</strong></div>
+  {% else %}
+    <div>
+      <a href="{% url 'login' %}" class="button ajax-page">Login</a>
+    </div>
+  {% endif %}
+</div>
+
+<hr>
+
+<!-- Main 2-Column Layout -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: flex-start;">
+
+  <!-- Articles List -->
+  <div>
+    <h2>Articles</h2>
+    <ul style="list-style: none; padding: 0;">
+      {% for article in articles %}
+        <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background: white;">
+          <h3>Author: {{ article.author_name }}</h3>
+          <h2>Title: {{ article.title }}</h2>
+          <p>{{ article.content }}</p>
+
+          {% if article.tag_list %}
+            <strong>Tags:</strong>
+            {% for tag in article.tag_list %}
+              <a href="{% url 'tags' tag %}" class="tag-link" style="margin-right: 5px;">{{ tag }}</a>
+            {% endfor %}
+          {% endif %}
+        </li>
+      {% empty %}
+        <li>No articles found.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Tags Sidebar -->
+  <div class="tags-sidebar">
+    <h3>All Tags</h3>
+    <ul>
+      {% for tag, count in tag_counts_list %}
+        <li>
+          <a href="{% url 'tags' tag %}" class="tag-link"
+             {% if selected_tag and selected_tag|lower == tag|lower %}style="font-weight:bold;color:red;"{% endif %}>
+             {{ tag }}
+          </a> ({{ count }})
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</div> <!-- End Main Grid -->
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+  <div class="pagination-wrapper" style="text-align:center; margin-top: 20px;">
+    <div class="pagination">
+
+      <!-- First Page -->
+      {% if page_obj.number > 1 %}
+        <a href="?page=1" class="ajax-page">First</a>
+      {% endif %}
+
+      <!-- Previous Page -->
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="ajax-page">&larr;</a>
+      {% endif %}
+
+      <!-- Page Numbers -->
+      {% for num in page_obj.paginator.page_range %}
+        {% if num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+          {% if num == page_obj.number %}
+            <strong>{{ num }}</strong>
+          {% else %}
+            <a href="?page={{ num }}" class="ajax-page">{{ num }}</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      <!-- Next Page -->
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="ajax-page">&rarr;</a>
+      {% endif %}
+
+      <!-- Last Page -->
+      {% if page_obj.number < page_obj.paginator.num_pages %}
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="ajax-page">Last</a>
+      {% endif %}
+
+    </div>
+  </div>
+{% endif %}
+
+<script>
+  // Auto-remove message container after 3.5s
+  setTimeout(() => {
+    const msgContainer = document.getElementById('message-container');
+    if (msgContainer) msgContainer.remove();
+  }, 3500);
+</script>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/article.js"></script>
+</body>
+</html>
