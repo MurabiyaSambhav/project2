@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head id="navbar">
+  <meta charset="UTF-8">
+  <title>{% if article %}Edit Article{% else %}Add Article{% endif %}</title>
+  <link rel="stylesheet" href="{% static 'css/add.css' %}">
+</head>
+<body>
+    <div id="main-content">
+
+        <form id="addArticleForm" method="POST" 
+              action="{% if article %}{% url 'edit_article' article.id %}{% else %}{% url 'add_article' %}{% endif %}">
+          {% csrf_token %}
+          <h2>{% if article %}Edit{% else %}Add{% endif %} Article</h2>
+
+          <label>Title:</label>
+          <input type="text" name="title" value="{{ article.title }}" required>
+
+          <label>Content:</label>
+          <textarea name="content" rows="5" required>{{ article.content }}</textarea>
+
+          <label>Tags:</label>
+          <input type="text" name="tags" value="{{ article.tags }}" required>
+
+          <div style="margin-top:10px;">
+            <button type="submit" data-action="publish">Publish</button>
+            <button type="submit" data-action="draft">Save as Draft</button>
+
+            {% if article %}
+              {% if article.is_draft %}
+                <button type="submit" data-action="delete">Delete</button>
+              {% else %}
+                <button type="button" class="cancel-btn" data-redirect="{% url 'draft_article' %}">Cancel</button>
+              {% endif %}
+            {% else %}
+              <button type="button" class="cancel-btn" data-redirect="{% url 'article' %}">Cancel</button>
+            {% endif %}
+          </div>
+        </form>
+
+    </div>
+    <script src="/static/js/common.js"></script>
+    <script src="/static/js/add.js"></script>
+</body>
+</html>
