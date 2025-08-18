@@ -1,12 +1,15 @@
 from django.contrib import admin
 from django.urls import path, include  
-from rest_framework.routers import DefaultRouter  
-from article.views import ArticleViewSet, article, register, login, logout, save_article, draft_article, tags
+from rest_framework import routers 
+from article.views import (ArticleHybridViewSet, UserHybridViewSet,article , register, login, logout, save_article, draft_article, tags)
 
-router = DefaultRouter()
-router.register(r'articles', ArticleViewSet)
+# DRF router for API endpoints
+router = routers.DefaultRouter()
+router.register(r'articles', ArticleHybridViewSet, basename='article')
+router.register(r'users', UserHybridViewSet, basename='user')
 
 urlpatterns = [
+    # Frontend / normal views
     path('', article, name='home'),
     path('register/', register, name='register'),
     path('login/', login, name='login'),

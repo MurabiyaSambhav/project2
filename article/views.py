@@ -7,15 +7,32 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from rest_framework import viewsets
-from .models import Articles
-from .serializers import ArticleSerializer
+from rest_framework.response import Response
+from .models import Articles , Cuser
+from rest_framework import viewsets, status
+from article.serializers import ArticleSerializer, UserSerializer
 
-
-# -------------------- API --------------------
-
-class ArticleViewSet(viewsets.ModelViewSet):
+# -------------------- Article ViewSet (hybrid) --------------------
+class ArticleHybridViewSet(viewsets.ModelViewSet):
     queryset = Articles.objects.all()
     serializer_class = ArticleSerializer
+
+    def list(self):
+        queryset = Articles.objects.values('id', 'title', 'content', 'tags', 'created_at')
+        return Response(list(queryset))
+
+
+# -------------------- User ViewSet (hybrid) --------------------
+class UserHybridViewSet(viewsets.ModelViewSet):
+    queryset = Cuser.objects.all()
+    serializer_class = UserSerializer
+
+    def list(self):
+        queryset = Cuser.objects.values(
+            'id', 'username', 'password', 'email', 'first_name', 'last_name', 
+            'phone', 'is_active', 'is_staff', 'date_joined'
+        )
+        return Response(list(queryset))
 
 
 # -------------------- Register --------------------
