@@ -1,24 +1,33 @@
+from django.urls import path, include
+from rest_framework import routers
 from django.contrib import admin
-from django.urls import path, include  
-from rest_framework import routers 
-from article.views import (ArticleHybridViewSet, UserHybridViewSet,article , register, login, logout, save_article, draft_article, tags)
+from article.views import ArticleHybridViewSet, UserHybridViewSet
+from article.views import article, draft_article, save_article, login, logout, register,tags
+from article.views import ArticleHybridViewSet, UserHybridViewSet
 
-# DRF router for API endpoints
 router = routers.DefaultRouter()
 router.register(r'articles', ArticleHybridViewSet, basename='article')
 router.register(r'users', UserHybridViewSet, basename='user')
 
 urlpatterns = [
-    # Frontend / normal views
+    path('admin/', admin.site.urls),
+
+    # Old frontend pages
     path('', article, name='home'),
-    path('register/', register, name='register'),
-    path('login/', login, name='login'),
-    path('logout/', logout, name='logout'),
     path('article/', article, name='article'),
+    path('draft_article/', draft_article, name='draft_article'),
     path('article_form/', save_article, name='add_article'),
     path('article_form/<int:article_id>/', save_article, name='edit_article'),
-    path('draft_article/', draft_article, name='draft_article'),
+    path('login/', login, name='login'),
+    path('logout/', logout, name='logout'),
+    path('register/', register, name='register'),
     path('tags/<str:tag>/', tags, name='tags'),
-    path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),  
+
+    # DRF API
+    path('api/', include(router.urls)),
+
+    # Custom search route
+    path('api/search/', ArticleHybridViewSet.as_view({'get': 'search_articles'}), name='article-search'),
+
 ]
+

@@ -20,6 +20,10 @@
         data-has-drafts="{{ has_drafts|yesno:'true,false' }}"> My Drafts </a>
       <a href="{% url 'logout' %}" class="button">Logout</a>
     </div>
+    {% comment %} <form id="search-form">
+    <input type="text" name="q" placeholder="Search articles..." value="{{ search_query }}">
+    <button type="submit">Search</button>
+    </form> {% endcomment %}
     <div><strong>Welcome, {{ user_name }}!</strong></div>
   {% else %}
     <div>

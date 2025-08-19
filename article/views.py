@@ -5,33 +5,51 @@ from django.core.paginator import Paginator
 from collections import Counter
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
+
+# -------------------- Imports for API Views --------------------
 from rest_framework import viewsets
 from rest_framework.response import Response
 from .models import Articles , Cuser
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from article.serializers import ArticleSerializer, UserSerializer
+from rest_framework import viewsets, filters
+from rest_framework.decorators import action
 
-# -------------------- Article ViewSet (hybrid) --------------------
+# -------------------- Article API --------------------
 class ArticleHybridViewSet(viewsets.ModelViewSet):
     queryset = Articles.objects.all()
     serializer_class = ArticleSerializer
+    permission_classes = [IsAuthenticated]   # optional
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'content']     # you can add 'tags' if needed
 
-    def list(self):
+    # Optional: simplified list output
+    def list(self, request, *args, **kwargs):
         queryset = Articles.objects.values('id', 'title', 'content', 'tags', 'created_at')
         return Response(list(queryset))
 
+    # Custom search endpoint
+    @action(detail=False, methods=['get'], url_path='search')
+    def search_articles(self, request):
+        queryset = self.filter_queryset(self.get_queryset())  # applies ?search=
 
-# -------------------- User ViewSet (hybrid) --------------------
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+# -------------------- api for user--------------------
 class UserHybridViewSet(viewsets.ModelViewSet):
     queryset = Cuser.objects.all()
     serializer_class = UserSerializer
 
-    def list(self):
-        queryset = Cuser.objects.values(
-            'id', 'username', 'password', 'email', 'first_name', 'last_name', 
-            'phone', 'is_active', 'is_staff', 'date_joined'
-        )
+    def list(self, request, *args, **kwargs):
+        queryset = Cuser.objects.values('id', 'username', 'password', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'is_staff', 'date_joined')
         return Response(list(queryset))
 
 

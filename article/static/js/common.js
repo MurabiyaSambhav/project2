@@ -75,3 +75,29 @@ window.onpopstate = () => {
     .then(html => replaceMainContent(html, window.location.pathname))
     .catch(err => console.error("SPA Popstate Error:", err));
 };
+
+function loadSearchResults() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+
+    if (query) {
+        fetch(`/api/articles/?search=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('articles-container');
+                if (!container) return; // Skip if container doesn't exist
+                container.innerHTML = ''; // Clear previous content
+
+                data.forEach(article => {
+                    const div = document.createElement('div');
+                    div.className = 'article';
+                    div.innerHTML = `<h2>${article.title}</h2><p>${article.content}</p>`;
+                    container.appendChild(div);
+                });
+            });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadSearchResults();
+});
