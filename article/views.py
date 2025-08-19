@@ -4,6 +4,7 @@ from article.models import Cuser, Articles
 from django.core.paginator import Paginator
 from collections import Counter
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from rest_framework.decorators import action, permission_classes
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
@@ -16,30 +17,33 @@ from rest_framework import viewsets
 from article.serializers import ArticleSerializer, UserSerializer
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
-# -------------------- Article API --------------------
 class ArticleHybridViewSet(viewsets.ModelViewSet):
     queryset = Articles.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = [IsAuthenticated]   # optional
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'content']     # you can add 'tags' if needed
+    search_fields = ['title', 'content']
 
-    # Optional: simplified list output
-    def list(self, request, *args, **kwargs):
-        queryset = Articles.objects.values('id', 'title', 'content', 'tags', 'created_at')
-        return Response(list(queryset))
+    # ---------------- Permissions ----------------
+    def get_permissions(self):
+        if self.action in ['search_articles']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
-    # Custom search endpoint
+    # ---------------- Custom search endpoint ----------------
     @action(detail=False, methods=['get'], url_path='search')
+    @permission_classes([AllowAny])
     def search_articles(self, request):
-        queryset = self.filter_queryset(self.get_queryset())  # applies ?search=
-
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # Apply pagination if available
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-
+        
+        # Return all results if no pagination
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -48,7 +52,8 @@ class UserHybridViewSet(viewsets.ModelViewSet):
     queryset = Cuser.objects.all()
     serializer_class = UserSerializer
 
-    def list(self, request, *args, **kwargs):
+    # def list(self, request, *args, **kwargs):
+    def list(self, request):
         queryset = Cuser.objects.values('id', 'username', 'password', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'is_staff', 'date_joined')
         return Response(list(queryset))
 

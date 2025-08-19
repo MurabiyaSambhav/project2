@@ -1,11 +1,13 @@
 from django.urls import path, include
-from rest_framework import routers
+from rest_framework.routers import DefaultRouter
 from django.contrib import admin
 from article.views import ArticleHybridViewSet, UserHybridViewSet
 from article.views import article, draft_article, save_article, login, logout, register,tags
 from article.views import ArticleHybridViewSet, UserHybridViewSet
 
-router = routers.DefaultRouter()
+router = DefaultRouter()
+# register() connects a ViewSet to a URL prefix.
+# It tells DRF: “Take this ViewSet and automatically create all the standard CRUD URLs for it.”
 router.register(r'articles', ArticleHybridViewSet, basename='article')
 router.register(r'users', UserHybridViewSet, basename='user')
 
@@ -25,9 +27,9 @@ urlpatterns = [
 
     # DRF API
     path('api/', include(router.urls)),
-
     # Custom search route
-    path('api/search/', ArticleHybridViewSet.as_view({'get': 'search_articles'}), name='article-search'),
+    path('api/search/', ArticleHybridViewSet.as_view({'get': 'search_articles'}), name='article-search')
+
 
 ]
 

@@ -1,4 +1,4 @@
-{% load static %}
+ {% comment %} {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head id="navbar">
@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="{% static 'css/article.css' %}">
 </head>
 <body>
+<div id="map"></div>
+
 
 <!-- Navbar -->
 <div id="navbar" style="display: flex; justify-content: space-between; align-items: center;">
@@ -20,10 +22,10 @@
         data-has-drafts="{{ has_drafts|yesno:'true,false' }}"> My Drafts </a>
       <a href="{% url 'logout' %}" class="button">Logout</a>
     </div>
-    {% comment %} <form id="search-form">
+     <form id="search-form">
     <input type="text" name="q" placeholder="Search articles..." value="{{ search_query }}">
     <button type="submit">Search</button>
-    </form> {% endcomment %}
+    </form> 
     <div><strong>Welcome, {{ user_name }}!</strong></div>
   {% else %}
     <div>
@@ -126,5 +128,69 @@
 </script>
 <script src="/static/js/common.js"></script>
 <script src="/static/js/article.js"></script>
+</body>
+</html> {% endcomment %} 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Google Map Example</title>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h2>My Google Map</h2>
+  <div id="map"></div>
+
+  <!-- Load Google Maps JavaScript API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-H18DRnUgOuhVJETJeea1o20bWdrIYh4"></script>
+  <script>
+    const apiKey = "AIzaSyC-H18DRnUgOuhVJETJeea1o20bWdrIYh4"; // Use the same key for REST requests
+
+    // Initialize map centered on New York
+    const map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 21.515471, lng: 70.456444 },
+      zoom: 12
+    });
+
+    // Add initial marker
+    let marker = new google.maps.Marker({
+      position: { lat: 21.515471, lng: 70.456444 },
+      map: map,
+      title: "junagadh , malivada road!"
+    });
+
+    // Function to get coordinates from address using Geocoding API
+    async function getCoordinates(address) {
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "OK") {
+        const location = data.results[0].geometry.location;
+        console.log("Latitude:", location.lat, "Longitude:", location.lng);
+
+        // Move map to new location
+        map.setCenter(location);
+
+        // Remove previous marker and add new one
+        if (marker) marker.setMap(null);
+        marker = new google.maps.Marker({
+          position: location,
+          map: map,
+          title: address
+        });
+
+        return location;
+      } else {
+        console.error("Error fetching location:", data.status);
+      }
+    }
+    // Example usage: move map to Eiffel Tower
+    getCoordinates("Eiffel Tower, Paris");
+  </script>
 </body>
 </html>

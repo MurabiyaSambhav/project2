@@ -11,15 +11,20 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Articles
         fields = ['id', 'title', 'content', 'tags', 'tag_list', 'author', 'author_name', 'created_at', 'is_draft']
 
+    author_name = serializers.SerializerMethodField()
+
+    def get_author_name(self, obj):
+        return obj.author.username if obj.author else "Anonymous"
+
+
     def get_tag_list(self, obj):
-        return [tag.strip() for tag in obj.tags.split(',') if tag.strip()]
+        return [tag.strip().lower() for tag in obj.tags.split(',') if tag.strip()]
 
     def create(self, validated_data):
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['author'] = request.user
         return super().create(validated_data)
-
 
 # -------------------- User Serializer --------------------
 class UserSerializer(serializers.ModelSerializer):
