@@ -29,7 +29,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     # Custom search route
     path('api/search/', ArticleHybridViewSet.as_view({'get': 'search_articles'}), name='article-search')
-
-
 ]
 
