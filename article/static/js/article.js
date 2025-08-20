@@ -49,7 +49,18 @@ function initArticlePage(url) {
   // Any other page-specific JS for articles can go here
 }
 
+document.getElementById('search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const query = this.search.value;
+    const url = `/article/?search=${encodeURIComponent(query)}&format=html`;
 
+    fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(res => res.text())
+        .then(html => {
+            replaceMainContent(html, `/article/?search=${encodeURIComponent(query)}`);
+        })
+        .catch(err => console.error("Search Error:", err));
+});
 
 // Handle browser back/forward buttons
 window.onpopstate = () => {

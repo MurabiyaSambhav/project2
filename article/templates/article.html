@@ -23,7 +23,7 @@
       <a href="{% url 'logout' %}" class="button">Logout</a>
     </div>
      <form id="search-form">
-    <input type="text" name="q" placeholder="Search articles..." value="{{ search_query }}">
+    <input type="text" name="search" placeholder="Search articles..." value="{{ search_query }}">
     <button type="submit">Search</button>
     </form> 
     <div><strong>Welcome, {{ user_name }}!</strong></div>
@@ -40,27 +40,26 @@
 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: flex-start;">
 
   <!-- Articles List -->
-  <div>
-    <h2>Articles</h2>
-    <ul style="list-style: none; padding: 0;">
-      {% for article in articles %}
-        <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background: white;">
-          <h3>Author: {{ article.author_name }}</h3>
-          <h2>Title: {{ article.title }}</h2>
-          <p>{{ article.content }}</p>
-
-          {% if article.tag_list %}
-            <strong>Tags:</strong>
-            {% for tag in article.tag_list %}
-              <a href="{% url 'tags' tag %}" class="tag-link" style="margin-right: 5px;">{{ tag }}</a>
-            {% endfor %}
-          {% endif %}
-        </li>
-      {% empty %}
-        <li>No articles found.</li>
-      {% endfor %}
-    </ul>
-  </div>
+<div>
+  <h2>Articles</h2>
+  <ul id="article-list" style="list-style: none; padding: 0;">
+    {% for article in articles %}
+      <li style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background: white;">
+        <h3>Author: {{ article.author_name }}</h3>
+        <h2>Title: {{ article.title }}</h2>
+        <p>{{ article.content }}</p>
+        {% if article.tag_list %}
+          <strong>Tags:</strong>
+          {% for tag in article.tag_list %}
+            <a href="{% url 'tags' tag %}" class="tag-link" style="margin-right: 5px;">{{ tag }}</a>
+          {% endfor %}
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>No articles found.</li>
+    {% endfor %}
+  </ul>
+</div>
 
   <!-- Tags Sidebar -->
   <div class="tags-sidebar">

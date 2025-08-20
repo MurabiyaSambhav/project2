@@ -8,6 +8,7 @@ from rest_framework.decorators import action, permission_classes
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
+from django.db.models import Q
 
 # -------------------- Imports for API Views --------------------
 from rest_framework.response import Response
@@ -20,32 +21,35 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class ArticleHybridViewSet(viewsets.ModelViewSet):
     queryset = Articles.objects.all()
-    serializer_class = ArticleSerializer
+    serializer_class = ArticleSerializer 
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'content']
+    # http_method_names = ['get', 'post']
 
     # ---------------- Permissions ----------------
+
     def get_permissions(self):
         if self.action in ['search_articles']:
             return [AllowAny()]
         return [IsAuthenticated()]
 
     # ---------------- Custom search endpoint ----------------
+
     @action(detail=False, methods=['get'], url_path='search')
     @permission_classes([AllowAny])
     def search_articles(self, request):
         queryset = self.filter_queryset(self.get_queryset())
         
-        # Apply pagination if available
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        
-        # Return all results if no pagination
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+   # # Apply pagination if available
+        # page = self.paginate_queryset(queryset)
+        # if page is not None:
+        #     serializer = self.get_serializer(page, many=True)
+        #     return self.get_paginated_response(serializer.data)
+       
+        # Return all results if no pagination
 # -------------------- api for user--------------------
 # class UserHybridViewSet(viewsets.ModelViewSet):
 #     queryset = Cuser.objects.all()
@@ -148,12 +152,27 @@ def logout(request):
 def article(request):
     user = request.user if request.user.is_authenticated else None
 
+    # Get search query from GET parameters
+    search_query = request.GET.get('search', '').strip()
+
     # Get all published articles
     articles_qs = Articles.objects.filter(is_draft=False).select_related('author').order_by('-created_at')
+
+    # Apply search filter if query exists (match whole words only)
+    if search_query:
+        # Escape regex special characters in search_query
+        import re
+        escaped_query = re.escape(search_query)
+        articles_qs = articles_qs.filter(
+            Q(title__iregex=rf'\b{escaped_query}\b') | Q(content__iregex=rf'\b{escaped_query}\b')
+        )
+
+    # Pagination
     paginator = Paginator(articles_qs, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Prepare articles for template
     processed_articles = [
         {
             'id': art.id,
@@ -186,6 +205,7 @@ def article(request):
         'page_obj': page_obj,
         'has_drafts': has_drafts,
         'no_drafts': not has_drafts,
+        'search_query': search_query,  # keep query in input field
     }
 
     # SPA response
@@ -193,7 +213,6 @@ def article(request):
         return render(request, 'article.html', context)
 
     return render(request, 'article.html', context)
-
 
 # -------------------- Save/Add/Edit Article --------------------
 @login_required(login_url='login')
