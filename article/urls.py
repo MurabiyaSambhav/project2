@@ -27,6 +27,7 @@ urlpatterns = [
 
     # DRF API
     path('api/', include(route.urls)),
+    
     # Custom search route
     path('api/search/', ArticleHybridViewSet.as_view({'get': 'search_articles'}), name='article-search')
 ]
