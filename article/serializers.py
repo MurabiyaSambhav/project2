@@ -16,7 +16,6 @@ class ArticleSerializer(serializers.ModelSerializer):
     def get_author_name(self, obj):
         return obj.author.username if obj.author else "Anonymous"
 
-
     def get_tag_list(self, obj):
         return [tag.strip().lower() for tag in obj.tags.split(',') if tag.strip()]
 
@@ -27,35 +26,35 @@ class ArticleSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 # -------------------- User Serializer --------------------
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cuser
-        fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'is_staff', 'date_joined']
-        extra_kwargs = {'password': {'write_only': True}}
+    # class UserSerializer(serializers.ModelSerializer):
+    #     class Meta:
+    #         model = Cuser
+    #         fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'is_staff', 'date_joined']
+    #         extra_kwargs = {'password': {'write_only': True}}
 
-    def validate_username(self, value):
-        user = self.instance
-        if Cuser.objects.exclude(pk=user.pk if user else None).filter(username=value).exists():
-            raise serializers.ValidationError("Username is already taken.")
-        return value
+    #     def validate_username(self, value):
+    #         user = self.instance
+    #         if Cuser.objects.exclude(pk=user.pk if user else None).filter(username=value).exists():
+    #             raise serializers.ValidationError("Username is already taken.")
+    #         return value
 
-    def validate_email(self, value):
-        user = self.instance
-        if Cuser.objects.exclude(pk=user.pk if user else None).filter(email=value).exists():
-            raise serializers.ValidationError("Email is already taken.")
-        return value
+    #     def validate_email(self, value):
+    #         user = self.instance
+    #         if Cuser.objects.exclude(pk=user.pk if user else None).filter(email=value).exists():
+    #             raise serializers.ValidationError("Email is already taken.")
+    #         return value
 
-    def create(self, validated_data):
-        user = Cuser.objects.create(**validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+    #     def create(self, validated_data):
+    #         user = Cuser.objects.create(**validated_data)
+    #         user.set_password(validated_data['password'])
+    #         user.save()
+    #         return user
 
-    def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
-        for attr, val in validated_data.items():
-            setattr(instance, attr, val)
-        if password:
-            instance.set_password(password)
-        instance.save()
-        return instance
+    #     def update(self, instance, validated_data):
+    #         password = validated_data.pop('password', None)
+    #         for attr, val in validated_data.items():
+    #             setattr(instance, attr, val)
+    #         if password:
+    #             instance.set_password(password)
+    #         instance.save()
+    #         return instance

@@ -10,11 +10,10 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 
 # -------------------- Imports for API Views --------------------
-from rest_framework import viewsets
 from rest_framework.response import Response
 from .models import Articles , Cuser
-from rest_framework import viewsets
-from article.serializers import ArticleSerializer, UserSerializer
+from article.serializers import ArticleSerializer
+# from article.serializers import UserSerializer
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -48,14 +47,14 @@ class ArticleHybridViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 # -------------------- api for user--------------------
-class UserHybridViewSet(viewsets.ModelViewSet):
-    queryset = Cuser.objects.all()
-    serializer_class = UserSerializer
+# class UserHybridViewSet(viewsets.ModelViewSet):
+#     queryset = Cuser.objects.all()
+#     serializer_class = UserSerializer
 
-    # def list(self, request, *args, **kwargs):
-    def list(self, request):
-        queryset = Cuser.objects.values('id', 'username', 'password', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'is_staff', 'date_joined')
-        return Response(list(queryset))
+#     # def list(self, request, *args, **kwargs):
+#     def list(self, request):
+#         queryset = Cuser.objects.values('id', 'username', 'password', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'is_staff', 'date_joined')
+#         return Response(list(queryset))
 
 
 # -------------------- Register --------------------
