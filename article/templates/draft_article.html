@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head id="navbar">
+  <meta charset="UTF-8">
+  <title>My Draft Articles</title>
+  <link rel="stylesheet" href="{% static 'css/draft.css' %}">
+</head>
+<body data-page="draft_list">
+
+    <div id="main-content">
+        <h2>Your Draft Articles</h2>
+
+        <div id="draft-container">
+          {% if articles %}
+            {% for article in articles %}
+              <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.content }}</p>
+                <p><strong>Tags:</strong> {{ article.tags }}</p>
+
+                {% if article.id %}
+                  <a href="{% url 'edit_article' article.id %}" class="ajax-page">Edit</a>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <p><a href="{% url 'article' %}" class="ajax-page">Back to All Articles</a></p>
+    </div>
+
+    <!-- Include your JS -->
+    <script src="{% static 'js/common.js' %}"></script>
+    <script src="{% static 'js/draft.js' %}"></script>
+</body>
+</html>

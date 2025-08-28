@@ -1,0 +1,68 @@
+// add.js
+console.log("add.js loaded");
+
+function getCSRFToken() {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? match[1] : "";
+}
+
+// Initialize Add/Edit Article Page
+export function initAddArticlePage() {
+  console.log("initAddArticlePage called");
+
+  const form = document.getElementById("addArticleForm");
+  if (!form) {
+    console.log("No form found");
+    return;
+  }
+
+  const csrfToken = getCSRFToken();
+
+  // Add event listeners to buttons
+  form.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const action = btn.dataset.action || (btn.classList.contains("cancel-btn") ? "cancel" : "publish");
+
+      // Cancel button just redirects to article page
+      if (action === "cancel") {
+        window.location.href = btn.dataset.redirect || "/article/";
+        return;
+      }
+
+      // Prepare form data
+      const formData = new FormData(form);
+      formData.append("action", action);
+
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "X-Requested-With": "XMLHttpRequest"
+          }
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          alert(data.message || "Success");
+          if (data.redirect) window.location.href = data.redirect;
+        } else {
+          alert(data.message || "Error");
+        }
+
+      } catch (err) {
+        console.error("Error submitting article:", err);
+        alert("Failed to submit article");
+      }
+    });
+  });
+}
+
+// Initialize on page load
+document.addEventListener("DOMContentLoaded", () => {
+  initAddArticlePage();
+});

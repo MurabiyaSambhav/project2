@@ -1,0 +1,10 @@
+git add .
+git commit -m "Your message"
+git push
+
+env\Scripts\activate.bat
+
+npm run start-all
+
+
+

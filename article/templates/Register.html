@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head id="navbar">
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <link rel="stylesheet" href="{% static 'css/register.css' %}">
+
+</head>
+<body>
+    <div id="main-content">
+
+        <form id="registerForm" method="POST" action="{% url 'register' %}">
+          {% csrf_token %}
+          <h2>Register</h2>
+
+          <label>Name:</label>
+          <input type="text" name="name" id="name" required>
+
+          <label>Email:</label>
+          <input type="email" name="email" id="email" required>
+
+          <label>Password:</label>
+          <input type="password" name="password" id="password" required>
+
+          <label>Phone:</label>
+          <input type="number" name="phone" id="phone" required>
+
+          <button type="submit">Register</button>
+          <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        </form>
+
+    </div>
+
+    <script>
+    document.getElementById("registerForm").addEventListener("submit", function(event) {
+        console.log("Register form submitted");
+
+        let name = document.getElementById("name").value.trim();
+        let email = document.getElementById("email").value.trim();
+        let password = document.getElementById("password").value.trim();
+        let phone = document.getElementById("phone").value.trim();
+
+        // Regex definitions
+        let nameRegex = /^[A-Za-z\s]{3,30}$/; // 3-30 letters
+        let emailRegex = /^[\w.-]+@[\w.-]+\.\w{2,}$/;
+        let passwordRegex = /^(?=.*\d).{3,}$/; // min 6 chars, at least 1 number
+        let phoneRegex = /^[0-9]{10}$/;
+
+        // Validation
+        if (!nameRegex.test(name)) {
+            alert("Name must be 3-30 letters only.");
+            event.preventDefault();
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            alert("Enter a valid email address.");
+            event.preventDefault();
+            return;
+        }
+
+        if (!passwordRegex.test(password)) {
+            alert("Password must be at least 6 characters and include a number.");
+            event.preventDefault();
+            return;
+        }
+
+        if (!phoneRegex.test(phone)) {
+            alert("Phone number must be exactly 10 digits.");
+            event.preventDefault();
+            return;
+        }
+    });
+    </script>
+    <script src="{% static 'js/common.js' %}"></script>
+    <script src="/static/js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head id="navbar">
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+</head>
+<body>
+    <div id="main-content">
+
+        <form id="loginForm" method="POST" action="{% url 'login' %}">
+          {% csrf_token %}
+          <h2>Login</h2>
+
+          <!-- Inline Message Area (inside form) -->
+          <div class="form-messages"></div>
+
+          <label>Email:</label>
+          <input type="email" name="email" required>
+
+          <label>Password:</label>
+          <input type="password" name="password" required>
+
+          <button type="submit">Login</button>
+          <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+        </form>
+
+    </div>
+<script src="{% static 'js/common.js' %}"></script>
+<script src="/static/js/login.js"></script>
+
+</body>
+</html>

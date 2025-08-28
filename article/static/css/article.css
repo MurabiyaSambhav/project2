@@ -1,0 +1,268 @@
+/* ================== BASE STYLES ================== */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+}
+
+h1,
+h2 {
+    margin: 0 0 10px;
+    color: #007BFF;
+}
+
+h3 {
+    margin: 0;
+    color: red;
+}
+
+h5 {
+    margin-top: 10px;
+    color: orange;
+}
+
+/* ================== BUTTON STYLES ================== */
+.button {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #007BFF;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 5px 5px 10px 0;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+/* ================== ARTICLE LIST ================== */
+ul {
+    padding: 0;
+    list-style: none;
+}
+
+li {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ================== TAG LINKS ================== */
+.tag-link {
+    display: inline-block;
+    margin-right: 6px;
+    margin-top: 5px;
+    text-decoration: none;
+    background-color: #eee;
+    color: #333;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tag-link:hover {
+    background-color: #d0d0d0;
+    color: #000;
+}
+
+/* ================== LIKE & COMMENT BUTTONS ================== */
+.like-comment-container {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.like-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.like-wrapper span {
+    font-size: 14px;
+    color: #333;
+}
+
+/* ================== COMMENT BOX ================== */
+.comment-box {
+    margin-top: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    background-color: #fafafa;
+    border-radius: 4px;
+}
+
+.comment-box p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.comment-box textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.add-comment-btn {
+    background-color: #28a745;
+}
+
+.add-comment-btn:hover {
+    background-color: #218838;
+}
+
+/* ================== PAGINATION ================== */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.pagination a,
+.pagination strong {
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    background: #f1f1f1;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination a:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+/* ================== ALERTS ================== */
+.custom-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    animation: fadeOut 3s ease-in-out forwards;
+    display: flex;
+    align-items: center;
+}
+
+.alert-success {
+    background-color: #4CAF50;
+}
+
+.alert-error {
+    background-color: #f44336;
+}
+
+.alert-info,
+.alert-warning {
+    background-color: #ff9800;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        top: 0;
+    }
+}
+
+/* ================== TAGS SIDEBAR ================== */
+.tags-sidebar {
+    flex: 1;
+    max-height: 400px;
+    overflow-y: auto;
+    background: #fff;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.tags-sidebar h3 {
+    margin: 0 0 10px 0;
+    color: #007BFF;
+}
+
+.tags-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tags-sidebar li {
+    margin-bottom: 10px;
+    background: #f7f7f7;
+    padding: 6px 8px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tags-sidebar .tag-link {
+    background-color: #eee;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.tags-sidebar .tag-link:hover {
+    background-color: #d0d0d0;
+    color: #000;
+}
+
+/* Scrollbar Styling */
+.tags-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tags-sidebar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.tags-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* ================== HIDDEN CLASS ================== */
+.hidden {
+    display: none;
+}

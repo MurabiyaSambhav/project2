@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Articles</title>
+  <link rel="stylesheet" href="{% static 'css/article.css' %}">
+</head>
+<body>
+
+<!-- Navbar -->
+<div id="navbar" style="display:flex; justify-content:space-between; align-items:center;">
+  {% if is_logged_in %}
+    <div>
+      <a href="{% url 'add_article' %}" class="button">Add Article</a>
+      <a href="{% url 'draft_article' %}" class="button">My Drafts</a>
+      <a href="{% url 'logout' %}" class="button">Logout</a>
+    </div>
+
+    <form method="get" id="search-form" style="margin-left:10px;">
+      <input type="text" name="search" placeholder="Search articles..." value="{{ search_query }}">
+      <button type="submit">Search</button>
+    </form>
+
+    <div><strong>Welcome, {{ user_name }}!</strong></div>
+  {% else %}
+    <div><a href="{% url 'login' %}" class="button">Login</a></div>
+  {% endif %}
+</div>
+
+<hr>
+
+<div style="display:grid; grid-template-columns:2fr 1fr; gap:20px;">
+
+  <!-- Articles -->
+  <div>
+    <h2>Articles</h2>
+
+    <ul id="article-list" style="list-style:none; padding:0;">
+      {% for article in page_obj %}
+        <li style="margin-bottom:20px; padding:15px; border:1px solid #ccc; border-radius:8px; background:#fff;">
+          <h3>Author: {{ article.author.username }}</h3>
+          <h2>{{ article.title }}</h2>
+          <p>{{ article.content }}</p>
+
+        {% if article.tag_list %}
+          <div style="margin-bottom:10px;">
+            <strong>Tags:</strong>
+            {% for tag in article.tag_list %}
+              <a href="?tag={{ tag }}">{{ tag }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+
+          <div style="display:flex; gap:15px; align-items:center; margin-top:10px;">
+            <!-- Like form -->
+            <form method="post" action="{% url 'like_article' article.id %}">
+              {% csrf_token %}
+              <button type="submit" class="button">
+                {% if article.is_liked %}
+                  Liked
+                {% else %}
+                  Like
+                {% endif %}
+              <span>{{ article.like_entries.count }}</span>
+            </form>
+
+            <!-- Comment toggle and count -->
+            <div>
+              <button type="button" class="comment-btn button" data-article-id="{{ article.id }}">Comments</button>
+              <span>{{ article.comments.count }}</span>
+            </div>
+          </div>
+
+          <!-- Comment box (hidden by default; JS toggles) -->
+          <div id="comment-box-{{ article.id }}" style="display:none; margin-top:10px; border-top:1px solid #ddd; padding-top:10px;">
+            {% if article.comments.exists %}
+              {% for comment in article.comments.all %}
+                <p><b>{{ comment.user.username }}</b>: {{ comment.content }}</p>
+              {% endfor %}
+            {% else %}
+              <p style="color:#666;">No comments yet.</p>
+            {% endif %}
+
+            {% if is_logged_in %}
+              <form method="post" action="{% url 'add_comment' article.id %}">
+                {% csrf_token %}
+                <textarea name="content" rows="2" style="width:100%; padding:5px;" placeholder="Add a comment..."></textarea>
+                <button type="submit" style="margin-top:5px;">Add Comment</button>
+              </form>
+            {% else %}
+              <p style="color:#555;">Login to add a comment</p>
+            {% endif %}
+          </div>
+
+        </li>
+      {% empty %}
+        <li>No articles found.</li>
+      {% endfor %}
+    </ul>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <div style="text-align:center; margin-top:20px;">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}">Prev</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% ifequal num page_obj.number %}
+            <strong>{{ num }}</strong>
+          {% else %}
+            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}">{{ num }}</a>
+          {% endifequal %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_tag %}&tag={{ selected_tag }}{% endif %}">Next</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Sidebar: tags -->
+  <div>
+    <h3>All Tags</h3>
+    <ul>
+      {% for tag, count in tag_counts_list %}
+        <li><a href="?tag={{ tag }}">{{ tag }}</a> ({{ count }})</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+</div>
+<script src="{% static 'js/common.js' %}"></script>
+<script src="{% static 'js/article.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+Best choice: SPA with React frontend + Django REST API backend
+
+Optional upgrades: GraphQL if you want optimized queries or future mobile apps.
+
+Hybrid approach: Start with Django templates + AJAX, then gradually migrate to React SPA if needed.
+
+[User Action] → [React / JS Component] → [API call / AJAX] → [Django Server] → [DB / Logic] → [JSON Response] → [React / JS updates UI]
+
+
+
+
+Step 1️⃣: Complete Auth Integration
+
+Wrap the app in AuthProvider (we just did that).
+
+Update Login and Register components to use AuthContext:
+
+On successful login/register, call login(userData) to update global state.
+
+Anywhere in the app, you can now check user to show/hide buttons or data.
+
+Step 2️⃣: Migrate Article List
+
+Replace your article.js DOM rendering with React components:
+
+ArticleList → fetches articles from /api/articles/.
+
+ArticleItem → displays title, author, tags, like button.
+
+CommentSection → displays comments and handles adding new ones.
+
+Use Context API to check login status before allowing likes/comments.
+
+Step 3️⃣: Implement Likes & Comments via API
+
+Update your Django backend to return JSON for likes and comments:
+
+/article/<id>/like/ → toggles like and returns { liked, likes }
+
+/article/<id>/comment/ → adds comment and returns { comment, user }
+
+React components will call these APIs and update UI instantly.
+
+Step 4️⃣: Migrate Article CRUD
+
+Create ArticleForm component for add/edit articles.
+
+Create DraftList component for draft articles.
+
+Connect these to Django API endpoints for POST/PUT/DELETE.
+
+Step 5️⃣: Search & Pagination
+
+Create SearchBar component.
+
+On submit, call /api/articles/?search=keyword.
+
+React handles page changes by fetching the correct page from API.
+
+Step 6️⃣: Replace Django Templates Gradually
+
+Once React handles all UI:
+
+Remove article.html, login.html, register.html, add_article.html, draft_article.html.
+
+Django becomes API-only backend, React SPA handles everything.
+
+Step 7️⃣: Optional Upgrades
+
+Add GraphQL for optimized queries (nested data, less over-fetching).
+
+Add React Router for SPA routing (/login, /articles, /drafts).
+
+Add Redux if your global state grows complex (likes, comments, user, notifications).

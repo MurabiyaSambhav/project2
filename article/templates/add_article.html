@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head id="navbar">
+  <meta charset="UTF-8">
+  <title>{% if article %}Edit Article{% else %}Add Article{% endif %}</title>
+  <link rel="stylesheet" href="{% static 'css/add.css' %}">
+  <link rel="icon" href="{% static 'images/favicon.ico' %}">
+</head>
+<body data-page="add_article">
+
+
+<div id="main-content">
+  <form id="addArticleForm" method="POST"
+        action="{% if article %}{% url 'edit_article' article.id %}{% else %}{% url 'add_article' %}{% endif %}">
+    {% csrf_token %}
+    <h2>{% if article %}Edit{% else %}Add{% endif %} Article</h2>
+
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" value="{{ article.title }}" required>
+
+    <label for="content">Content:</label>
+    <textarea id="content" name="content" rows="8" required>{{ article.content }}</textarea>
+
+    <label for="tags">Tags:</label>
+    <input type="text" id="tags" name="tags" value="{{ article.tags }}" required>
+
+    <div class="form-buttons">
+      <button type="submit" data-action="publish" class="btn btn-publish">Publish</button>
+      <button type="submit" data-action="draft" class="btn btn-draft">Save as Draft</button>
+
+      {% if article %}
+          {% if article.is_draft %}
+             <button type="button" data-action="delete" class="btn btn-delete">Delete</button>
+         {% else %}
+             <button type="button" class="cancel-btn btn btn-cancel" data-redirect="{% url 'draft_article' %}">Cancel</button>
+          {% endif %}
+      {% else %}
+          <button type="button" class="cancel-btn btn btn-cancel" data-redirect="{% url 'article' %}">Cancel</button>
+      {% endif %}
+    </div>
+  </form>
+</div>
+<script src="{% static 'js/common.js' %}"></script>
+<script src="{% static 'js/add.js' %}"></script>
+
+</body>
+</html>
